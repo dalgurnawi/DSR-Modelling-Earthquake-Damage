@@ -68,7 +68,7 @@ data_encoded["geo_3"] = data_encoded["geo_level_3_id"].map(dict_3['geo_level_3_i
 
 
 data_encoded = data_encoded.drop(["geo_level_1_id", "geo_level_2_id", "geo_level_3_id"],axis=1)
-print(data_encoded.dtypes)
+print(print(data_encoded[data_encoded.columns[1:]].corr()['damage_grade'][:]))
 
 
 
