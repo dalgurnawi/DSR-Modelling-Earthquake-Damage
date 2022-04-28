@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-from src.data.make_dataset import df
+from src.features.build_features import df
 
 # split the data into 80 to 20
 end = int(0.8 * df.shape[0])

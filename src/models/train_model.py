@@ -8,6 +8,7 @@ import catboost as cb
 import xgboost as xgb
 import pickle
 
+
 def pickle_model(model, filename):
     with open(filename, 'wb') as f:
         pickle.dump(model, f)
@@ -26,6 +27,7 @@ print("logisticregression stop")
 print("lgbc start")
 # Initiate and train LGBMClassifier
 # lgbc_parameters = {'learning_rate' : [0.1, 0.05], 'n_estimators' : [1000, 1100], 'max_depth' : [5, 6], 'num_leaves' : [50, 60]}
+# list of parameters in range for gridsearch [int(x) for x in np.linspace(start = 100, stop = 1000, num = 10)]
 grid_lgbc = lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)
 # lgbc = lgb.LGBMClassifier(n_jobs=-1)
 # grid_lgbc = GridSearchCV(lgbc, lgbc_parameters, refit=True, verbose=1, n_jobs=-1)

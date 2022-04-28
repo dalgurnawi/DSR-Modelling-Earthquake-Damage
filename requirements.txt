@@ -6,3 +6,5 @@ sklearn
 lightgbm
 xgboost
 catboost
+
+category_encoders
