@@ -131,3 +131,5 @@ dmypy.json
 #Removing dot idea
 .idea
 
+#Removing mac journaled files
+.DS_Store
