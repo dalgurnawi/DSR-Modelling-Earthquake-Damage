@@ -129,7 +129,11 @@ dmypy.json
 .pyre/
 
 #Removing dot idea
-.idea
+.data*
 
 #Removing mac journaled files
 .DS_Store
+
+#Removing trained model files
+model_*
+catboost_info
