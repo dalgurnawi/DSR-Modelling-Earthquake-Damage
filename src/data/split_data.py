@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split
 from src.features.build_features import df
 
+
 # # split the data into 80 to 20
 # end = int(0.8 * df.shape[0])
 # training_set = df.iloc[:end]
@@ -11,7 +12,7 @@ from src.features.build_features import df
 
 # TODO temporary measures for smaller dataset and XGBoost compatibility
 # df['damage_grade'] = df['damage_grade'] - 1
-# df = df.head(1000)
+df = df.head(100)
 
 # Prepare data for train_test_split
 y = df['damage_grade'].to_numpy()
@@ -21,4 +22,6 @@ X = X.to_numpy()
 
 # train test split
 (X_train, X_test, y_train, y_test) = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
 

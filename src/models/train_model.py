@@ -1,8 +1,6 @@
-from src.data.split_data import X_train, X_test, y_train, y_test
-from sklearn.pipeline import Pipeline, make_pipeline
+from src.data.split_data import X_train, y_train
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
-from sklearn.ensemble import RandomForestClassifier
 import lightgbm as lgb
 import catboost as cb
 import xgboost as xgb
@@ -23,11 +21,6 @@ import time
 # >>> from sklearn.ensemble import ExtraTreesClassifier
 # >>> from sklearn.ensemble import GradientBoostingClassifier
 # https://scikit-learn.org/stable/modules/ensemble.html
-# >>> from sklearn.ensemble import RandomForestClassifier
-# >>> from sklearn.ensemble import ExtraTreesClassifier
-# >>> from sklearn.tree import DecisionTreeClassifier
-
-# SGDClassifier which with loss=log runs Logistic Regression with Stochastic Gradient Descent optimization, and it has partial_fit method.
 
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -38,32 +31,38 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+
 # ???from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 # >>> from sklearn.ensemble import BaggingClassifier
 
-names = [
-    "AdaBoost",
-    "Decision_Tree",
-    "CatBoost",
-    "Gaussian_Process",
-    "LGBCM(with_param)",
-    "LGBMC(no_param)",
-    "Linear_SVM",
-    "Naive_Bayes",
-    "Nearest_Neighbors",
-    "Neural_Net",
-    "QDA",
-    "Random_Forest",
-    "RBF_SVM",
+lr_param = {'penalty': ['none', 'l2', 'l1', 'elasticnet'],
+            'class_weight': ['None', 'balanced'],
+            'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'],
+            'max_iter': [10, 100, 500],
+            'n_jobs': [-1]
+            }
 
-]
+lgbm_parameters = {'learning_rate': [0.1, 0.05, 0.01],
+                   'n_estimators': [1000],  # number of trees
+                   'max_depth': [5, 10, 15],
+                   'num_leaves': [50, 75, 100],
+                   'n_jobs': [-1]
+                   }
+
+rf_parameters = {'criterion': ['gini', 'entropy'],
+                 'n_estimators': [1000, 1200, 1500],  # number of trees
+                 'max_depth': [5, 10, 15],
+                 'n_jobs': [-1]
+}
+
+noparam = {'n_jobs': [-1]}
 
 all_models = [
     ("AdaBoost", AdaBoostClassifier()),
     ("CatBoost", cb.CatBoostClassifier()),
     ("Decision_Tree", DecisionTreeClassifier(max_depth=5)),
     ("Gaussian_Process", GaussianProcessClassifier(1.0 * RBF(1.0), n_jobs=-1)),
-    ("LGBCM(with_param)", lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)),
+    ("LGBCM(with_param)",lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)),
     ("LGBMC(no_param)", lgb.LGBMClassifier(n_jobs=-1)),
     ("Linear_SVM", SVC(kernel="linear", C=0.025)),
     ("Logistic_Regression_Vanilla", LogisticRegression(n_jobs=-1)),
@@ -78,16 +77,14 @@ all_models = [
 ]
 
 baseline_models_list = [
-    ("Logistic_Regression_Vanilla", LogisticRegression(n_jobs=-1)),
-    ("Logistic_Regression_Parametrized", LogisticRegression(n_jobs=-1)),
-    ("Random_Forest", RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1, n_jobs=-1)),
-    ("LGBCM(with_param)", lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)),
+    ("Logistic_Regression_Vanilla", LogisticRegression(n_jobs=-1), noparam),
+    ("Logistic_Regression(with_param)", LogisticRegression(n_jobs=-1), lr_param),
+    ("Random_Forest(with_param)", RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1, n_jobs=-1), rf_parameters),
+    ("Random_Forest(no_param)", RandomForestClassifier(n_jobs=-1), noparam),
+    ("LGBCM(with_param)", lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1), lgbm_parameters),
+    ("LGBMC(no_param)", lgb.LGBMClassifier(n_jobs=-1), noparam)
 ]
 
-cb_parameters = {'learning_rate' : [0.1, 0.05, 0.01],
-                    'n_estimators' : [1000], # number of trees
-                    'max_depth' : [5, 10, 15],
-                    'num_leaves' : [50, 75, 100]}
 
 def pickle_model(model, filename):
     with open(filename, 'wb') as f:
@@ -95,90 +92,22 @@ def pickle_model(model, filename):
         f.close()
 
 
-def train_and_pickle_model(clf, name):
-    # gridded_model = GridSearchCV(clf, lgbc_parameters, refit=True, verbose=3, n_jobs=-1)
-    model = clf.fit(X_train, y_train)
+def train_and_pickle_model(clf, name, parameters):
+    gridded_model = GridSearchCV(clf, parameters, refit=True, verbose=3, n_jobs=-1)
+    model = gridded_model.fit(X_train, y_train)
     pickle_model(model, 'model_%s' % name)
+    with open("best_params.txt", 'a') as f:
+        f.write('\n')
+        f.write(str(gridded_model.best_params_))
 
 
 def train_all_models(models_list):
     for model_set in models_list:
         t_start = time.time()
-        train_and_pickle_model(model_set[1], model_set[0])
+        train_and_pickle_model(model_set[1], model_set[0], model_set[2])
         t_stop = time.time()
         print('Training of a %s model took: %ss' % (model_set[0], t_stop - t_start))
         # score = clf.score(X_test, y_test)
 
 
 train_all_models(baseline_models_list)
-
-# print("logisticregression start")
-# # Initiate and train baseline LogisticRegression
-# lr = LogisticRegression(n_jobs=-1)
-# # train the initiated model
-# pipe_lr = Pipeline([('logistic_regression', lr)])
-# pipe_lr.fit(X_train, y_train)
-# pickle_model(pipe_lr, 'model_pipe_lr')
-# print("logisticregression stop")
-#
-# print("lgbc start")
-# # Initiate and train LGBMClassifier
-# # lgbc_parameters = {'learning_rate' : [0.1, 0.05], 'n_estimators' : [1000, 1100], 'max_depth' : [5, 6], 'num_leaves' : [50, 60]}
-# # list of parameters in range for gridsearch [int(x) for x in np.linspace(start = 100, stop = 1000, num = 10)]
-# grid_lgbc = lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)
-# # lgbc = lgb.LGBMClassifier(n_jobs=-1)
-# # grid_lgbc = GridSearchCV(lgbc, lgbc_parameters, refit=True, verbose=3, n_jobs=-1)
-# pipe_gb = Pipeline([('gradient_boosting', grid_lgbc)])
-# # fit the model
-# pipe_gb.fit(X_train, y_train)
-# pickle_model(pipe_gb, 'model_pipe_lgbc')
-# print("lgbc stop")
-#
-# print("catboost start")
-# # Initiate and train CatBoostClassifier
-# # cb_parameters = {'learning_rate' : [0.1, 0.05, 0.01],
-#                     # 'n_estimators' : [1000, 1500, 2000],
-#                     # 'max_depth' : [5, 6, 7, 8, 9 ,10],
-#                     # 'num_leaves' : [50, 60, 70, 80, 90, 100]
-# # }
-# # lgbc = lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)
-# cbc = cb.CatBoostClassifier()
-# # grid_cb = GridSearchCV(cbc, cb_parameters)
-# pipe_cbc = Pipeline([('cat_boosting', cbc)])
-# # fit the model
-# pipe_cbc.fit(X_train, y_train)
-# pickle_model(pipe_cbc, 'model_pipe_cbc')
-# print("catboost stop")
-#
-# print("randomforest start")
-# # Initiate and train CatBoostClassifier
-# # cb_parameters = {'learning_rate' : [0.1, 0.05, 0.01],
-#                     # 'n_estimators' : [1000, 1500, 2000],
-#                     # 'max_depth' : [5, 6, 7, 8, 9 ,10],
-#                     # 'num_leaves' : [50, 60, 70, 80, 90, 100]
-# # }
-# # lgbc = lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)
-# rf = RandomForestClassifier(n_jobs=-1)
-# # grid_cb = GridSearchCV(cbc, cb_parameters)
-# pipe_rf = Pipeline([('rf_boosting', rf)])
-# # fit the model
-# pipe_rf.fit(X_train, y_train)
-# pickle_model(pipe_rf, 'model_pipe_rf')
-# print("randomforest stop")
-#
-# # print("xgboost start")
-# # # Initiate and train XGBoostClassifier
-# # # cb_parameters = {'learning_rate' : [0.1, 0.05, 0.01],
-# # #                     'n_estimators' : [1000, 1500, 2000],
-# # #                     'max_depth' : [5, 6, 7, 8, 9 ,10],
-# # #                     'num_leaves' : [50, 60, 70, 80, 90, 100]
-# # # }
-# # # lgbc = lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)
-# # xgbc = xgb.XGBClassifier()
-# # # grid_cb = GridSearchCV(cbc, cb_parameters)
-# # pipe_xgbc = Pipeline([('xg_boosting', xgbc)])
-# # # fit the model
-# # pipe_xgbc.fit(X_train, y_train)
-# # pickle_model(pipe_xgbc, 'model_pipe_xgbc')
-# # print("xgboost stop")
-

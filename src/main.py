@@ -19,7 +19,6 @@ def create_results_for_model(model_file_name):
     dirname = os.path.dirname(__file__)
     unpickled_model = unpickle_model(model_file_name)
     model_prediction = unpickled_model.predict(test_df)
-    # print(pd.DataFrame(model_prediction, columns=['damage_grade']))
     results = pd.DataFrame(model_prediction, columns=['damage_grade'])
     upload_data = pd.concat([test_df['building_id'], results['damage_grade']], join='inner', axis=1)
     upload_data = upload_data.rename(columns={'0': 'building_id', '1': 'damage_grade'})
