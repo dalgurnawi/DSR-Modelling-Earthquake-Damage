@@ -3,6 +3,7 @@ import glob
 import os
 import pickle
 import pandas as pd
+import time
 
 
 def unpickle_model(filename):
@@ -24,10 +25,11 @@ def create_results_for_model(model_file_name):
     upload_data = upload_data.rename(columns={'0': 'building_id', '1': 'damage_grade'})
     upload_data.to_csv(os.path.join(dirname, r'../data/results/%s.csv' % model_file_name.split('/')[-1]), sep=',', index=False)
 
-
-
+t_start = time.time()
 print("main %s" % os.getcwd())
 models_list = glob.glob(r'./models/model*')
 for model in models_list:
     create_results_for_model(model)
+t_stop = time.time()
+print(t_stop - t_start)
 

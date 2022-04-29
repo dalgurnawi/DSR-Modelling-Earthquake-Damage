@@ -38,7 +38,10 @@ def test_all_models():
     total_t_start = time.time()
     model_list = glob.glob('model*')
     for model in model_list:
+        t_start = time.time()
         test_model(model)
+        t_stop = time.time()
+        print('Testing of a %s model took: %\n' % (model, t_stop - t_start))
     total_t_stop = time.time()
     print('Testing of all model took: %ss' % (total_t_stop - total_t_start))
 

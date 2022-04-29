@@ -102,7 +102,7 @@ df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "
 #Adding binary modifiers
 encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
 df = encoder.fit_transform(df)
-print(df[df.columns[1:]].corr()['damage_grade'][:])
+# print(df[df.columns[1:]].corr()['damage_grade'][:])
 
 #print(df.columns)
 
