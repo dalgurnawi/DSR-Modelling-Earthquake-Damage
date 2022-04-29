@@ -1,4 +1,5 @@
 import category_encoders as ce
+import pandas as pd
 from feature_engine.encoding import CountFrequencyEncoder
 import matplotlib.pyplot as plt
 
@@ -94,3 +95,5 @@ print(data_encoded[data_encoded.columns[1:]].corr()['damage_grade'][:])
 print("Processed data")
 
 print(df[df.columns[1:]].corr()['damage_grade'][:])
+file_name = 'CleanedData.csv'
+df.to_csv(file_name, sep='\t')
