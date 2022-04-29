@@ -43,7 +43,6 @@ dictionary_geo_dam = {}
 for index, row in df.iterrows():
     dictionary_geo_dam[row['geo_level_3_id']] = row['geo_dam']
 
-print(dictionary_geo_dam)
 
 
 #for index, row in df.iterrows():
@@ -96,14 +95,14 @@ df.drop(df[df.count_families>3].index, inplace=True)
 # Dropping redundant columns
 df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "geo_level_3_id", "geo_level_1_id", "geo_level_1_str", "damage_grade_str", "geo_ref"],axis=1)
 #print("Unprocessed data")
-#print(data_encoded[data_encoded.columns[1:]].corr()['damage_grade'][:])
+
 #print("Processed data")
 #print(df[df.columns[1:]].corr()['damage_grade'][:])
 
 #Adding binary modifiers
 encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
 df = encoder.fit_transform(df)
-
+print(df[df.columns[1:]].corr()['damage_grade'][:])
 
 #print(df.columns)
 

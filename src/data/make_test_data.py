@@ -5,47 +5,17 @@ import pandas as pd
 from feature_engine.encoding import CountFrequencyEncoder
 import matplotlib.pyplot as plt
 from src.data.make_dataset import data
+from src.features.build_features import dictionary_geo_dam
+
 dirname = os.path.dirname(__file__)
 test_v = pd.read_csv(os.path.join(dirname, r"./../../data/raw/test_values.csv"), decimal=",").reset_index(drop=True)
 
 encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
 data = encoder.fit_transform(test_v)
 
-#convert geo_level locationa and damage_grade to str.
-data["geo_level_1_str"] = data["geo_level_1_id"].astype(str)
-data["damage_grade_str"] = data["damage_grade"].astype(str)
-
-#Reviewing damage grades per floor count
-ov = data.pivot_table(index='geo_level_1_str', columns='damage_grade_str', values='building_id',aggfunc=len, fill_value=0)
-#converting overview to df
-ov_2 = ov.reset_index()
-damage = {'1': 'A', '2':'B', '3':'C'}
-ov_2 = ov_2.rename(columns={'1': 'A', '2':'B', '3':'C'})
-
-#total number of samples
-n = data.shape[0]
-
-ov_2['A'] = ov_2['A']/n
-ov_2['B'] = ov_2['B']/n
-ov_2['C'] = ov_2['C']/n
-
-dictionary = {}
-for index, row in ov_2.iterrows():
-    dictionary['A' + row['geo_level_1_str']] = row['A']
-for index, row in ov_2.iterrows():
-    dictionary['B' + row['geo_level_1_str']] = row['B']
-for index, row in ov_2.iterrows():
-    dictionary['C' + row['geo_level_1_str']] = row['C']
-
+#mapping dictionary from build_features
+data['geo_dam'] = data['geo_level_3_id'].map(dictionary_geo_dam)
 df = data.copy()
-
-df = df.replace({"damage_grade_str": damage})
-
-df['geo_ref'] = df['damage_grade_str'] + df['geo_level_1_str']
-
-df['geo_dam'] = df['geo_ref'].map(dictionary)
-
-
 # converting geolocation 1 to use a frequency encoder
 #freq_data_1 = CountFrequencyEncoder(encoding_method="frequency", variables=["geo_level_1_id"])
 # fitting the encoder
@@ -84,6 +54,6 @@ df['area_p_norm'] = (df['area_percentage'] - df['area_percentage'].min()) / (
 df['age_norm'] = (df['age'] - df['age'].min()) / (df['age'].max() - df['age'].min())
 
 # Dropping redundant columns
-test_df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "geo_level_3_id", "geo_level_1_id", "geo_level_1_str", "damage_grade_str", "geo_ref"],axis=1)
-file_name = 'TestDataSPAM 29041703.csv'
+test_df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "geo_level_3_id", "geo_level_1_id"],axis=1)
+file_name = 'TestDataSPAM 29041745.csv'
 df.to_csv(file_name, sep=',')
