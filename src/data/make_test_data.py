@@ -15,6 +15,8 @@ data = encoder.fit_transform(test_v)
 
 #mapping dictionary from build_features
 data['geo_dam'] = data['geo_level_3_id'].map(dictionary_geo_dam)
+data['geo_dam'] = data['geo_dam'].fillna(value=0)
+print(data['geo_dam'])
 df = data.copy()
 # converting geolocation 1 to use a frequency encoder
 #freq_data_1 = CountFrequencyEncoder(encoding_method="frequency", variables=["geo_level_1_id"])
@@ -55,5 +57,9 @@ df['age_norm'] = (df['age'] - df['age'].min()) / (df['age'].max() - df['age'].mi
 
 # Dropping redundant columns
 test_df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "geo_level_3_id", "geo_level_1_id"],axis=1)
+
+remaining_nan = test_df[test_df.isnull().any(axis=1)]
+print(remaining_nan)
+
 file_name = 'TestDataSPAM29041745.csv'
 df.to_csv(file_name, sep=',')
