@@ -12,7 +12,7 @@ from src.features.build_features import df
 
 # TODO temporary measures for smaller dataset and XGBoost compatibility
 # df['damage_grade'] = df['damage_grade'] - 1
-df = df.head(100)
+# df = df.head(10000)
 
 # Prepare data for train_test_split
 y = df['damage_grade'].to_numpy()

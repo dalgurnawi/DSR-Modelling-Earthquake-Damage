@@ -102,12 +102,15 @@ def train_and_pickle_model(clf, name, parameters):
 
 
 def train_all_models(models_list):
+    total_t_start = time.time()
     for model_set in models_list:
         t_start = time.time()
         train_and_pickle_model(model_set[1], model_set[0], model_set[2])
         t_stop = time.time()
         print('Training of a %s model took: %ss' % (model_set[0], t_stop - t_start))
         # score = clf.score(X_test, y_test)
+    total_t_stop = time.time()
+    print('Training of all model took: %ss' % (total_t_stop - total_t_start))
 
 
 train_all_models(baseline_models_list)
