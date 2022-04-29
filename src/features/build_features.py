@@ -29,7 +29,7 @@ for index, row in ov_2.iterrows():
     dictionary['B' + row['geo_level_1_str']] = row['B']
 for index, row in ov_2.iterrows():
     dictionary['C' + row['geo_level_1_str']] = row['C']
-print(dictionary)
+#print(dictionary)
 
 df = data.copy()
 
@@ -39,13 +39,16 @@ df['geo_ref'] = df['damage_grade_str'] + df['geo_level_1_str']
 
 df['geo_dam'] = df['geo_ref'].map(dictionary)
 
+dictionary_geo_dam = {}
+for index, row in df.iterrows():
+    dictionary_geo_dam[row['geo_level_3_id']] = row['geo_dam']
+
+
+
 #for index, row in df.iterrows():
     #df['geo_dam'] = dictionary[row['geo_ref']]
 
 #print(df["count_floors_pre_eq"].describe())
-
-# ov_floors.plot(kind='bar')
-# plt.show()
 
 #print(df.loc[:, "count_floors_pre_eq"].value_counts())
 # print(df.groupby('count_floors_pre_eq').agg({'damage_grade':'count'}).sort_values(by=['count_floors_pre_eq'], ascending=[True]))
@@ -90,54 +93,18 @@ df['height_p_norm']=(df['height_percentage']-df['height_percentage'].min())/(df[
 df.drop(df[df.count_families>3].index, inplace=True)
 
 # Dropping redundant columns
-df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "geo_level_3_id", "geo_level_1_id", "damage_grade", "geo_level_1_str", "damage_grade_str", "geo_ref"],axis=1)
+df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "geo_level_3_id", "geo_level_1_id", "geo_level_1_str", "damage_grade_str", "geo_ref"],axis=1)
 #print("Unprocessed data")
-#print(data_encoded[data_encoded.columns[1:]].corr()['damage_grade'][:])
+
 #print("Processed data")
 #print(df[df.columns[1:]].corr()['damage_grade'][:])
 
 #Adding binary modifiers
 encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
 df = encoder.fit_transform(df)
+print(df[df.columns[1:]].corr()['damage_grade'][:])
 
+#print(df.columns)
 
-print(df.columns)
-
-file_name = 'TrainDataSPAM updated.csv'
+file_name = 'TrainDataSPAMupdated.csv'
 df.to_csv(file_name, sep=',')
-
-#encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
-#data_encoded = encoder.fit_transform(data)
-
-
-# converting geolocation 1 to use a frequency encoder
-#freq_data_1 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_1_id"])
-# fitting the encoder
-#freq_data_1.fit(data_encoded)
-# creates a dictionary of frequency to categories
-#dict_1 = freq_data_1.encoder_dict_
-# creating a new column filled using dictionary
-#data_encoded["geo_1"] = data_encoded["geo_level_1_id"].map(dict_1['geo_level_1_id'])
-
-# converting geolocation 2 to use a frequency encoder
-#freq_data_2 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_2_id"])
-# fitting the encoder
-#freq_data_2.fit(data_encoded)
-# creates a dictionary of frequency to categories
-#dict_2 = freq_data_2.encoder_dict_
-# creating a new column filled using dictionary
-#data_encoded["geo_2"] = data_encoded["geo_level_2_id"].map(dict_2['geo_level_2_id'])
-
-# converting geolocation 3 to use a frequency encoder
-#freq_data_3 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_3_id"])
-# fitting the encoder
-#freq_data_3.fit(data_encoded)
-# creates a dictionary of frequency to categories
-#dict_3 = freq_data_3.encoder_dict_
-# creating a new column filled using dictionary
-#data_encoded["geo_3"] = data_encoded["geo_level_3_id"].map(dict_3['geo_level_3_id'])
-
-# dropping redundant geolocation features
-#df = data_encoded.drop(["geo_level_1_id", "geo_level_2_id", "geo_level_3_id"],axis=1)
-# print(print(data_encoded[data_encoded.columns[1:]].corr()['damage_grade'][:]))
-
