@@ -55,26 +55,39 @@ names = [
     "QDA",
     "Random_Forest",
     "RBF_SVM",
-    "XGBoost"
+
 ]
 
-classifiers = [
-    AdaBoostClassifier(),
-    cb.CatBoostClassifier(),
-    DecisionTreeClassifier(max_depth=5),
-    GaussianProcessClassifier(1.0 * RBF(1.0), n_jobs=-1),
-    lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1),
-    lgb.LGBMClassifier(n_jobs=-1),
-    SVC(kernel="linear", C=0.025),
-    GaussianNB(),
-    KNeighborsClassifier(3, n_jobs=-1),
-    MLPClassifier(alpha=1, max_iter=1000),
-    QuadraticDiscriminantAnalysis(),
-    RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1, n_jobs=-1),
-    SVC(gamma=2, C=1),
-    xgb.XGBClassifier()
+all_models = [
+    ("AdaBoost", AdaBoostClassifier()),
+    ("CatBoost", cb.CatBoostClassifier()),
+    ("Decision_Tree", DecisionTreeClassifier(max_depth=5)),
+    ("Gaussian_Process", GaussianProcessClassifier(1.0 * RBF(1.0), n_jobs=-1)),
+    ("LGBCM(with_param)", lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)),
+    ("LGBMC(no_param)", lgb.LGBMClassifier(n_jobs=-1)),
+    ("Linear_SVM", SVC(kernel="linear", C=0.025)),
+    ("Logistic_Regression_Vanilla", LogisticRegression(n_jobs=-1)),
+    ("Logistic_Regression_Parametrized", LogisticRegression(n_jobs=-1)),
+    ("Naive_Bayes", GaussianNB()),
+    ("Nearest_Neighbors", KNeighborsClassifier(3, n_jobs=-1)),
+    ("Neural_Net", MLPClassifier(alpha=1, max_iter=1000)),
+    ("QDA", QuadraticDiscriminantAnalysis()),
+    ("Random_Forest", RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1, n_jobs=-1)),
+    ("RBF_SVM", SVC(gamma=2, C=1)),
+    ("XGBoost", xgb.XGBClassifier())
 ]
 
+baseline_models_list = [
+    ("Logistic_Regression_Vanilla", LogisticRegression(n_jobs=-1)),
+    ("Logistic_Regression_Parametrized", LogisticRegression(n_jobs=-1)),
+    ("Random_Forest", RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1, n_jobs=-1)),
+    ("LGBCM(with_param)", lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1)),
+]
+
+cb_parameters = {'learning_rate' : [0.1, 0.05, 0.01],
+                    'n_estimators' : [1000], # number of trees
+                    'max_depth' : [5, 10, 15],
+                    'num_leaves' : [50, 75, 100]}
 
 def pickle_model(model, filename):
     with open(filename, 'wb') as f:
@@ -83,20 +96,21 @@ def pickle_model(model, filename):
 
 
 def train_and_pickle_model(clf, name):
+    # gridded_model = GridSearchCV(clf, lgbc_parameters, refit=True, verbose=3, n_jobs=-1)
     model = clf.fit(X_train, y_train)
     pickle_model(model, 'model_%s' % name)
 
 
-def train_all_models(model_names, model_classifiers):
-    for name, clf in zip(model_names, model_classifiers):
+def train_all_models(models_list):
+    for model_set in models_list:
         t_start = time.time()
-        train_and_pickle_model(clf, name)
+        train_and_pickle_model(model_set[1], model_set[0])
         t_stop = time.time()
-        print('Training of a %s model took: %ss' % (name, t_stop - t_start))
+        print('Training of a %s model took: %ss' % (model_set[0], t_stop - t_start))
         # score = clf.score(X_test, y_test)
 
 
-train_all_models(names, classifiers)
+train_all_models(baseline_models_list)
 
 # print("logisticregression start")
 # # Initiate and train baseline LogisticRegression

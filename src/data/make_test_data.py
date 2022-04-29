@@ -5,8 +5,8 @@ import pandas as pd
 from feature_engine.encoding import CountFrequencyEncoder
 import matplotlib.pyplot as plt
 from src.data.make_dataset import data
-
-test_v = pd.read_csv(os.path.abspath("./../../data/raw/test_values.csv"), decimal=",").reset_index(drop=True)
+dirname = os.path.dirname(__file__)
+test_v = pd.read_csv(os.path.join(dirname, r"./../../data/raw/test_values.csv"), decimal=",").reset_index(drop=True)
 
 encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
 data_encoded = encoder.fit_transform(test_v)
@@ -60,6 +60,6 @@ df['area_p_norm'] = (df['area_percentage'] - df['area_percentage'].min()) / (
 df['age_norm'] = (df['age'] - df['age'].min()) / (df['age'].max() - df['age'].min())
 
 # Dropping redundant columns
-df = df.drop(["height_percentage", "area_percentage", "age"], axis=1)
+test_df = df.drop(["height_percentage", "area_percentage", "age"], axis=1)
 file_name = 'TestDataSPAM updated.csv'
 df.to_csv(file_name, sep=',')
