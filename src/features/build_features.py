@@ -2,51 +2,23 @@ import category_encoders as ce
 import pandas as pd
 from feature_engine.encoding import CountFrequencyEncoder
 import matplotlib.pyplot as plt
-
-# Transforming data to categorical data
 from src.data.make_dataset import data
-encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
-data_encoded = encoder.fit_transform(data)
 
-# converting geo level columns to strings as encoder only takes strings as arguments
-data_encoded["geo_level_1_id"] = data_encoded["geo_level_1_id"].astype(str)
-data_encoded["geo_level_2_id"] = data_encoded["geo_level_2_id"].astype(str)
-data_encoded["geo_level_3_id"] = data_encoded["geo_level_3_id"].astype(str)
-
-
-# converting geolocation 1 to use a frequency encoder
-freq_data_1 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_1_id"])
-# fitting the encoder
-freq_data_1.fit(data_encoded)
-# creates a dictionary of frequency to categories
-dict_1 = freq_data_1.encoder_dict_
-# creating a new column filled using dictionary
-data_encoded["geo_1"] = data_encoded["geo_level_1_id"].map(dict_1['geo_level_1_id'])
-
-# converting geolocation 2 to use a frequency encoder
-freq_data_2 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_2_id"])
-# fitting the encoder
-freq_data_2.fit(data_encoded)
-# creates a dictionary of frequency to categories
-dict_2 = freq_data_2.encoder_dict_
-# creating a new column filled using dictionary
-data_encoded["geo_2"] = data_encoded["geo_level_2_id"].map(dict_2['geo_level_2_id'])
-
-# converting geolocation 3 to use a frequency encoder
-freq_data_3 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_3_id"])
-# fitting the encoder
-freq_data_3.fit(data_encoded)
-# creates a dictionary of frequency to categories
-dict_3 = freq_data_3.encoder_dict_
-# creating a new column filled using dictionary
-data_encoded["geo_3"] = data_encoded["geo_level_3_id"].map(dict_3['geo_level_3_id'])
-
-# dropping redundant geolocation features
-df = data_encoded.drop(["geo_level_1_id", "geo_level_2_id", "geo_level_3_id"],axis=1)
-# print(print(data_encoded[data_encoded.columns[1:]].corr()['damage_grade'][:]))
+#convert geo_level locationa and damage_grade to str.
+data["geo_level_1_str"] = data["geo_level_1_id"].astype(str)
+data["damage_grade_str"] = data["damage_grade"].astype(str)
 
 #Reviewing damage grades per floor count
-ov_floors= df.pivot_table(index='damage_grade', columns='count_floors_pre_eq', values='building_id',aggfunc=len, fill_value=0)
+ov = data.pivot_table(index='geo_level_1_str', columns='damage_grade_str', values='building_id',aggfunc=len, fill_value=0)
+#converting overview to df
+ov_2 = ov.reset_index()
+ov_2 = ov_2.rename(columns={'1': 'A', '2':'B', '3':'C'})
+
+#total number of samples
+n = data.shape[0]
+
+print(ov_2)
+
 #print(df["count_floors_pre_eq"].describe())
 
 # ov_floors.plot(kind='bar')
@@ -102,3 +74,38 @@ df = df.drop(["height_percentage", "area_percentage", "age"],axis=1)
 #print(df[df.columns[1:]].corr()['damage_grade'][:])
 
 print("Go fuck yourself, shishtoff")
+
+encoder = ce.binary.BinaryEncoder(cols=None, return_df=True)
+data_encoded = encoder.fit_transform(data)
+
+
+# converting geolocation 1 to use a frequency encoder
+freq_data_1 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_1_id"])
+# fitting the encoder
+freq_data_1.fit(data_encoded)
+# creates a dictionary of frequency to categories
+dict_1 = freq_data_1.encoder_dict_
+# creating a new column filled using dictionary
+data_encoded["geo_1"] = data_encoded["geo_level_1_id"].map(dict_1['geo_level_1_id'])
+
+# converting geolocation 2 to use a frequency encoder
+freq_data_2 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_2_id"])
+# fitting the encoder
+freq_data_2.fit(data_encoded)
+# creates a dictionary of frequency to categories
+dict_2 = freq_data_2.encoder_dict_
+# creating a new column filled using dictionary
+data_encoded["geo_2"] = data_encoded["geo_level_2_id"].map(dict_2['geo_level_2_id'])
+
+# converting geolocation 3 to use a frequency encoder
+freq_data_3 = CountFrequencyEncoder(encoding_method="frequency",variables=["geo_level_3_id"])
+# fitting the encoder
+freq_data_3.fit(data_encoded)
+# creates a dictionary of frequency to categories
+dict_3 = freq_data_3.encoder_dict_
+# creating a new column filled using dictionary
+data_encoded["geo_3"] = data_encoded["geo_level_3_id"].map(dict_3['geo_level_3_id'])
+
+# dropping redundant geolocation features
+df = data_encoded.drop(["geo_level_1_id", "geo_level_2_id", "geo_level_3_id"],axis=1)
+# print(print(data_encoded[data_encoded.columns[1:]].corr()['damage_grade'][:]))

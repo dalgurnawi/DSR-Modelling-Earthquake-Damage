@@ -46,12 +46,6 @@ data_encoded["geo_3"] = data_encoded["geo_level_3_id"].map(dict_3['geo_level_3_i
 # Dropping redundant geolocations
 df = data_encoded.drop(["geo_level_1_id", "geo_level_2_id", "geo_level_3_id"], axis=1)
 
-# Dropping outliers
-df.drop(df[df.age > 100].index, inplace=True)
-df.drop(df[df.count_floors_pre_eq > 5].index, inplace=True)
-df.drop(df[df.height_percentage > 11].index, inplace=True)
-df.drop(df[df.count_families > 3].index, inplace=True)
-
 # Normalising height_percentage, area_percentage, age
 df['height_p_norm'] = (df['height_percentage'] - df['height_percentage'].min()) / (
         df['height_percentage'].max() - df['height_percentage'].min())
