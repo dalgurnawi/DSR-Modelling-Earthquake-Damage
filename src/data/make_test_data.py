@@ -55,5 +55,5 @@ df['age_norm'] = (df['age'] - df['age'].min()) / (df['age'].max() - df['age'].mi
 
 # Dropping redundant columns
 test_df = df.drop(["height_percentage", "area_percentage", "age", "geo_level_2_id", "geo_level_3_id", "geo_level_1_id"],axis=1)
-file_name = 'TestDataSPAM 29041745.csv'
+file_name = 'TestDataSPAM29041745.csv'
 df.to_csv(file_name, sep=',')

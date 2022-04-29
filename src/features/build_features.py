@@ -106,5 +106,5 @@ print(df[df.columns[1:]].corr()['damage_grade'][:])
 
 #print(df.columns)
 
-file_name = 'TrainDataSPAM updated.csv'
+file_name = 'TrainDataSPAMupdated.csv'
 df.to_csv(file_name, sep=',')
