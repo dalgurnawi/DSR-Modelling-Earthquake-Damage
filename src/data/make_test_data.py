@@ -50,3 +50,5 @@ df.drop(df[df.height_percentage>11].index, inplace=True)
 df['height_p_norm']=(df['height_percentage']-df['height_percentage'].min())/(df['height_percentage'].max()-df['height_percentage'].min())
 df.drop(df[df.count_families>3].index, inplace=True)
 df = df.drop(["height_percentage", "area_percentage", "age"],axis=1)
+file_name = 'TestDataSPAM.csv'
+df.to_csv(file_name, sep=',')
