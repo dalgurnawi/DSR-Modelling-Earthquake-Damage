@@ -1,8 +1,9 @@
 from src.data.make_dataset import read_train_data
+from src.visualization.visualize import visualise_train_data
 from src.features.build_features import build_features
 from src.models.train_model import train_models_with_random_search_cv, train_models_with_grid_search_cv
 from src.models.train_model_noGridCV import train_no_grid_cv
-from src.data.make_test_data import create_test_data
+from src.features.build_features_test import build_features_test_data
 from src.data.split_data import split_train_dataset
 from src.models.predict_model import evaluate_all_models
 from src.models.test_models import test_models_generate_results
@@ -14,6 +15,14 @@ Read training data labels and values. Creating training dataset.
 """
 df = read_train_data(r'../../data/raw/train_labels.csv', r'../../data/raw/train_values.csv')
 
+
+"""
+Visualise the training data to study features.
+Specific to Richter's Predictor: Modeling Earthquake Damage
+https://www.drivendata.org/competitions/57/nepal-earthquake
+"""
+visualise_train_data(df)
+
 """
 Build features for training set.
 If dropping all categorical and low corr data use: use_vanilla_data=True (default: False)
@@ -22,8 +31,12 @@ To use this routine on a different data set, You have to edit build_features and
 value_column_string in split_train_dataset as
 this is specific to Richter's Predictor: Modeling Earthquake Damage
 https://www.drivendata.org/competitions/57/nepal-earthquake
+
+use_vanilla_data is made to a global variable since it needs to be consistent 
+for train and test datasets
 """
-train_df = build_features(df, use_vanilla_data=True)
+use_vanilla_data = False
+train_df = build_features(df, use_vanilla_data=use_vanilla_data)
 
 """
 Split the train dataframe according to value_column_string and train_test_split params
@@ -70,7 +83,7 @@ Additionally a cross validation score will be generated for the train dataset
 """
 Create the test dataset to generate results for upload
 """
-test_df = create_test_data(r"./../../data/raw/test_values.csv", use_vanilla_data=True)
+test_df = build_features_test_data(r"./../../data/raw/test_values.csv", use_vanilla_data=use_vanilla_data)
 
 """
 Apply test dataset to all trained models ang generate results.
