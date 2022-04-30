@@ -1,26 +1,17 @@
-from src.data.split_data import X_train, y_train
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import GridSearchCV
 import lightgbm as lgb
 import catboost as cb
 import xgboost as xgb
 import pickle
 import time
 
-# from sklearn.metrics import classification_report
-# from sklearn.metrics import confusion_matrix
-# from sklearn.metrics import accuracy_score
-# Accuracy score is the simplest way to evaluate
-# print(accuracy_score(SVC_prediction, y_test))
-# print(accuracy_score(KNN_prediction, y_test))
-# # But Confusion Matrix and Classification Report give more details about performance
-# print(confusion_matrix(SVC_prediction, y_test))
-# print(classification_report(KNN_prediction, y_test)
 
-# >>> from sklearn.model_selection import cross_val_score
-# >>> from sklearn.ensemble import ExtraTreesClassifier
-# >>> from sklearn.ensemble import GradientBoostingClassifier
-# https://scikit-learn.org/stable/modules/ensemble.html
+# TODO from sklearn.model_selection import cross_val_score
+# TODO from sklearn.ensemble import ExtraTreesClassifier
+# TODO from sklearn.ensemble import GradientBoostingClassifier
+# TODO from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# TODO from sklearn.ensemble import BaggingClassifier
+# TODO https://scikit-learn.org/stable/modules/ensemble.html
 
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -31,14 +22,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
-# ???from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-# >>> from sklearn.ensemble import BaggingClassifier
+from sklearn.linear_model import SGDClassifier
 
 lr_param = {'class_weight': 'balanced', 'max_iter': 100, 'n_jobs': -1, 'penalty': 'l1', 'solver': 'liblinear'}
 lgbm_parameters = {'learning_rate': 0.1, 'max_depth': 5, 'n_estimators': 1000, 'n_jobs': -1, 'num_leaves': 50}
 rf_parameters = {'criterion': 'gini', 'max_depth': 15, 'n_estimators': 1500, 'n_jobs': -1}
 noparam = {'n_jobs': -1}
+really_noparam = {}
 
 all_models = [
     ("AdaBoost", AdaBoostClassifier()),
@@ -65,7 +55,9 @@ baseline_models_list = [
     ("Random_Forest(with_param)", RandomForestClassifier, rf_parameters),
     ("Random_Forest(no_param)", RandomForestClassifier, noparam),
     ("LGBCM(with_param)", lgb.LGBMClassifier, lgbm_parameters),
-    ("LGBMC(no_param)", lgb.LGBMClassifier, noparam)
+    ("LGBMC(no_param)", lgb.LGBMClassifier, noparam),
+    ("Decision_Tree", DecisionTreeClassifier, really_noparam),
+    ("SGD", SGDClassifier, noparam)
 ]
 
 
@@ -75,21 +67,25 @@ def pickle_model(model, filename):
         f.close()
 
 
-def train_and_pickle_model(clf, name, parameters):
+def train_and_pickle_model(X_train, y_train, clf, name, parameters):
     init_model = clf(**parameters)
     model = init_model.fit(X_train, y_train)
     pickle_model(model, 'model_%s' % name)
 
 
-def train_all_models(models_list):
+def train_all_models(X_train, y_train, models_list):
     total_t_start = time.time()
     for model_set in models_list:
         t_start = time.time()
-        train_and_pickle_model(model_set[1], model_set[0], model_set[2])
+        train_and_pickle_model(X_train, y_train, model_set[1], model_set[0], model_set[2])
         t_stop = time.time()
         print('Training of a %s model took: %ss' % (model_set[0], t_stop - t_start))
     total_t_stop = time.time()
     print('Training of all model took: %ss' % (total_t_stop - total_t_start))
 
 
-train_all_models(baseline_models_list)
+def train_no_grid_cv(X_train, y_train, use_baseline_models=True):
+    if use_baseline_models:
+        train_all_models(X_train, y_train, baseline_models_list)
+    else:
+        train_all_models(all_models)
