@@ -1,4 +1,3 @@
-from src.data.split_data import X_train, y_train
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 import lightgbm as lgb
@@ -6,6 +5,8 @@ import catboost as cb
 import xgboost as xgb
 import pickle
 import time
+from datetime import date
+
 
 # from sklearn.metrics import classification_report
 # from sklearn.metrics import confusion_matrix
@@ -34,6 +35,8 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 # ???from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 # >>> from sklearn.ensemble import BaggingClassifier
+
+from sklearn.linear_model import SGDClassifier
 
 lr_param = {'penalty': ['none', 'l2', 'l1', 'elasticnet'],
             'class_weight': ['None', 'balanced'],
@@ -73,16 +76,17 @@ all_models = [
     ("QDA", QuadraticDiscriminantAnalysis()),
     ("Random_Forest", RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1, n_jobs=-1)),
     ("RBF_SVM", SVC(gamma=2, C=1)),
-    ("XGBoost", xgb.XGBClassifier())
+    ("XGBoost", xgb.XGBClassifier()),
+    ("SGD", SGDClassifier())
 ]
 
 baseline_models_list = [
-    ("Logistic_Regression_Vanilla", LogisticRegression(n_jobs=-1), noparam),
-    ("Logistic_Regression(with_param)", LogisticRegression(n_jobs=-1), lr_param),
-    ("Random_Forest(with_param)", RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1, n_jobs=-1), rf_parameters),
-    ("Random_Forest(no_param)", RandomForestClassifier(n_jobs=-1), noparam),
-    ("LGBCM(with_param)", lgb.LGBMClassifier(learning_rate=0.1, n_estimators=1000, max_depth=5, num_leaves=50, n_jobs=-1), lgbm_parameters),
-    ("LGBMC(no_param)", lgb.LGBMClassifier(n_jobs=-1), noparam)
+    ("Logistic_Regression_Vanilla", LogisticRegression, noparam),
+    ("Logistic_Regression(with_param)", LogisticRegression, lr_param),
+    ("Random_Forest(with_param)", RandomForestClassifier, rf_parameters),
+    ("Random_Forest(no_param)", RandomForestClassifier, noparam),
+    ("LGBCM(with_param)", lgb.LGBMClassifier, lgbm_parameters),
+    ("LGBMC(no_param)", lgb.LGBMClassifier, noparam)
 ]
 
 
@@ -98,7 +102,8 @@ def train_and_pickle_model(clf, name, parameters):
     pickle_model(model, 'model_%s' % name)
     with open("best_params.txt", 'a') as f:
         f.write('\n')
-        f.write(str(gridded_model.best_params_))
+        f.write(str(date.today()))
+        f.write("%s %s" % (name, str(gridded_model.best_params_)))
 
 
 def train_all_models(models_list):
@@ -113,4 +118,15 @@ def train_all_models(models_list):
     print('Training of all model took: %ss' % (total_t_stop - total_t_start))
 
 
-train_all_models(baseline_models_list)
+def train_models_with_grid_search_cv(use_baseline_models=True):
+    if use_baseline_models:
+        train_all_models(baseline_models_list)
+    else:
+        train_all_models(all_models)
+
+
+def train_models_with_random_search_cv(use_baseline_models=True):
+    if use_baseline_models:
+        train_all_models(baseline_models_list)
+    else:
+        train_all_models(all_models)
