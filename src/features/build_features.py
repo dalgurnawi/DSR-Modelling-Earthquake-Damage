@@ -49,7 +49,7 @@ def build_features(data, use_vanilla_data=False):
 
     # dropping redundant variables
     df.drop(
-        ['height_percentage', 'area_percentage', 'age', 'geo_level_2_id', 'geo_level_3_id',
+        ['building_id','height_percentage', 'area_percentage', 'age', 'geo_level_2_id', 'geo_level_3_id',
          'has_secondary_use_agriculture',
          'has_secondary_use_institution', 'has_secondary_use_school', 'has_secondary_use_industry',
          'has_secondary_use_school', 'has_secondary_use_health_post', 'has_secondary_use_gov_office',
