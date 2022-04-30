@@ -29,7 +29,9 @@
   </p>
 </div>
 
-
+<div align="center">
+<img src="https://cdn.britannica.com/90/182390-050-2221B963/earthquake-Map-Nepal-region-temblor-thousands-people-April-25-2015.jpg?w=690&h=388&c=crop" alt="Logo" width="700" height="500">
+</div>
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -62,9 +64,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<div align="center">
-<img src="https://cdn.britannica.com/90/182390-050-2221B963/earthquake-Map-Nepal-region-temblor-thousands-people-April-25-2015.jpg?w=690&h=388&c=crop" alt="Logo" width="700" height="500">
-</div>
+
 The challenge of the Mini-competition was to create a model that can predict the earthquake damage to buildings
 based on various features.
 
