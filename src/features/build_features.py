@@ -6,6 +6,7 @@ def build_features(data, use_vanilla_data=False):
     df = data
 
     if use_vanilla_data:
+        print("build_features using vanilla data: %s" % use_vanilla_data)
         # Dropping cathegorical from vanilla data
         df = df.drop(['land_surface_condition'], axis=1)
         df = df.drop(['foundation_type'], axis=1)
@@ -52,7 +53,11 @@ def build_features(data, use_vanilla_data=False):
          'has_secondary_use_agriculture',
          'has_secondary_use_institution', 'has_secondary_use_school', 'has_secondary_use_industry',
          'has_secondary_use_school', 'has_secondary_use_health_post', 'has_secondary_use_gov_office',
-         'has_secondary_use_use_police', 'has_secondary_use_other'], axis=1, inplace=True)
+         'has_secondary_use_use_police', 'has_secondary_use_other','has_superstructure_adobe_mud', 'has_superstructure_mud_mortar_stone', 'has_superstructure_stone_flag',
+              'has_superstructure_cement_mortar_stone', 'has_superstructure_mud_mortar_brick',
+              'has_superstructure_cement_mortar_brick', 'has_superstructure_timber', 'has_superstructure_bamboo',
+              'has_superstructure_rc_non_engineered', 'has_superstructure_rc_engineered', 'has_superstructure_other',
+              'has_secondary_use', 'has_secondary_use_hotel', 'has_secondary_use_rental', 'legal_ownership_status'], axis=1, inplace=True)
 
     # Converting features to str to get encoder to work
     df['count_floors_pre_eq'] = df['count_floors_pre_eq'].astype(str)
@@ -63,19 +68,20 @@ def build_features(data, use_vanilla_data=False):
     encoder = CountFrequencyEncoder(encoding_method='frequency',
                                     variables=['geo_level_1_id', 'count_floors_pre_eq', 'land_surface_condition',
                                                'foundation_type', 'roof_type', 'ground_floor_type', 'other_floor_type',
-                                               'position', 'plan_configuration', 'legal_ownership_status',
+                                               'position', 'plan_configuration',
                                                'count_families'])
     # fit the encoder
     encoder.fit(df)
     df = encoder.transform(df)
 
     # Adding binary modifiers
-    binary = ce.binary.BinaryEncoder(
-        cols=['has_superstructure_adobe_mud', 'has_superstructure_mud_mortar_stone', 'has_superstructure_stone_flag',
-              'has_superstructure_cement_mortar_stone', 'has_superstructure_mud_mortar_brick',
-              'has_superstructure_cement_mortar_brick', 'has_superstructure_timber', 'has_superstructure_bamboo',
-              'has_superstructure_rc_non_engineered', 'has_superstructure_rc_engineered', 'has_superstructure_other',
-              'has_secondary_use', 'has_secondary_use_hotel', 'has_secondary_use_rental'], return_df=True)
-    train_df = binary.fit_transform(df)
+    # binary = ce.binary.BinaryEncoder(
+    #     cols=['has_superstructure_adobe_mud', 'has_superstructure_mud_mortar_stone', 'has_superstructure_stone_flag',
+    #           'has_superstructure_cement_mortar_stone', 'has_superstructure_mud_mortar_brick',
+    #           'has_superstructure_cement_mortar_brick', 'has_superstructure_timber', 'has_superstructure_bamboo',
+    #           'has_superstructure_rc_non_engineered', 'has_superstructure_rc_engineered', 'has_superstructure_other',
+    #           'has_secondary_use', 'has_secondary_use_hotel', 'has_secondary_use_rental'], return_df=True)
+    # train_df = binary.fit_transform(df)
 
+    train_df = df
     return train_df

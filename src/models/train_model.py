@@ -6,6 +6,7 @@ import xgboost as xgb
 import pickle
 import time
 from datetime import date
+import os
 
 
 # from sklearn.metrics import classification_report
@@ -96,10 +97,11 @@ def pickle_model(model, filename):
         f.close()
 
 
-def train_and_pickle_model(clf, name, parameters):
+def train_and_pickle_model(X_train, y_train, clf, name, parameters):
+    dirname = os.path.dirname(__file__)
     gridded_model = GridSearchCV(clf, parameters, refit=True, verbose=3, n_jobs=-1)
     model = gridded_model.fit(X_train, y_train)
-    pickle_model(model, 'model_%s' % name)
+    pickle_model(model, os.path.join(dirname, 'model_%s' % name))
     with open("best_params.txt", 'a') as f:
         f.write('\n')
         f.write(str(date.today()))

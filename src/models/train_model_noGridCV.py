@@ -4,7 +4,7 @@ import catboost as cb
 import xgboost as xgb
 import pickle
 import time
-
+import os
 
 # TODO from sklearn.model_selection import cross_val_score
 # TODO from sklearn.ensemble import ExtraTreesClassifier
@@ -57,7 +57,7 @@ baseline_models_list = [
     ("LGBCM(with_param)", lgb.LGBMClassifier, lgbm_parameters),
     ("LGBMC(no_param)", lgb.LGBMClassifier, noparam),
     ("Decision_Tree", DecisionTreeClassifier, really_noparam),
-    ("SGD", SGDClassifier, noparam)
+    # ("SGD", SGDClassifier, noparam)
 ]
 
 
@@ -69,8 +69,9 @@ def pickle_model(model, filename):
 
 def train_and_pickle_model(X_train, y_train, clf, name, parameters):
     init_model = clf(**parameters)
+    dirname = os.path.dirname(__file__)
     model = init_model.fit(X_train, y_train)
-    pickle_model(model, 'model_%s' % name)
+    pickle_model(model, os.path.join(dirname, 'model_%s' % name))
 
 
 def train_all_models(X_train, y_train, models_list):

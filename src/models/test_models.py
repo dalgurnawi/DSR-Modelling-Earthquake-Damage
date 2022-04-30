@@ -27,8 +27,8 @@ def create_results_for_model(test_df, model_file_name):
 
 def test_models_generate_results(test_df):
     t_start = time.time()
-    print("main %s" % os.getcwd())
-    models_list = glob.glob(r'./models/model*')
+    dirname = os.path.dirname(__file__)
+    models_list = glob.glob(os.path.join(dirname, r'../models/model*'))
     for model in models_list:
         create_results_for_model(test_df, model)
     t_stop = time.time()
