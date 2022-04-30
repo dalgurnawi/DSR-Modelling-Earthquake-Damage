@@ -8,19 +8,8 @@
   </a>
 
   <h3 align="center">DSR Modelling Earthquake Damage</h3>
-
-  <p align="center">
-    Part of the DSR Batch 30 Mini-Competition to model earthquake damage in Nepal.
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
-  </p>
+  </p><p align="center">
+  
 </div>
 
 <div align="center">
@@ -120,11 +109,11 @@ Use this space to show how winning is done.
 
 The training data labels and values have to be imported and merged together into one dataset. This data was then used for data visualisation:
 <div align="center">
-    <img src="Subplots 1.png" alt="Logo" width="500" height="500">
-    <img src="Subplots 2.png" alt="Logo" width="500" height="500">
-    <img src="Subplots 3.png" alt="Logo" width="500" height="500">
-    <img src="Subplots 4.png" alt="Logo" width="500" height="500">
-    <img src="Subplots 5.png" alt="Logo" width="500" height="500">
+    <img src="src/visualization/Subplots 1.png" alt="Logo" width="500" height="500">
+    <img src="src/visualization/Subplots 2.png" width="500" height="500">
+    <img src="src/visualization/Subplots 3.png" alt="Logo" width="500" height="500">
+    <img src="src/visualization/Subplots 4.png" alt="Logo" width="500" height="500">
+    <img src="src/visualization/Subplots 5.png" alt="Logo" width="500" height="500">
 </div>
 
 Subsequently, the features for the model need to be built and selected. The code specifies two iterations, one vanilla with no changes to the code and having dropped all categorical and low correlation data, as well as a routine build where categorical data were encoded using a binary and frequency encoder, as well as some modification to the data, such as normalisation and removal of outliers.
@@ -198,17 +187,6 @@ A special shout out to my boy, Shishtoff and Paul and last, but not least the sw
 ## License
 
 Used for learning purposes only. Not to be distributed.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
